@@ -1,0 +1,47 @@
+name: Build CMake-based Project
+
+on: [ push, pull_request, merge_group ]
+
+env:
+  Catch2_VERSION: v3.5.1
+
+jobs:
+  build_and_test_regular:
+    name: build + test (regular)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup GCC Toolchain for CMake
+        run: export CXX=g++-13
+      - name: Install CMake
+        run: sudo apt update && sudo apt install cmake
+      - name: Install Catch2 v3 from Source
+        run: |
+          git clone https://github.com/catchorg/Catch2.git
+          cd Catch2
+          git checkout "$Catch2_VERSION"
+          mkdir build && cd build
+          cmake .. -DBUILD_TESTING=Off
+          make -j $(nproc)
+          sudo make install
+          # no `cd ..` necessary; each run command uses the project root as PWD
+      - name: Preparing Build
+        run: |
+          mkdir build && cd build
+          cmake .. \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_TESTING=On
+      - name: Build CMake-based project
+        run: |
+          cd build
+          make -j $(nproc)
+          make test
+
+  build_and_test_nix:
+    name: build + test (Nix)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v24
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - run: nix build . # Build the default Flake attribute.
