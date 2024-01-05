@@ -3,7 +3,9 @@ name: Build CMake-based Project
 on: [ push, pull_request, merge_group ]
 
 env:
-  Catch2_VERSION: v3.5.1
+  # Keep in sync with the version coming from Nix for local development:
+  # https://search.nixos.org/packages?channel=23.11&size=50&sort=relevance&type=packages&query=catch2_3
+  Catch2_VERSION: v3.4.0
 
 jobs:
   build_and_test_regular:
