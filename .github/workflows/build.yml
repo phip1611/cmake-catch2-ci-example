@@ -12,7 +12,7 @@ jobs:
     name: build + test (regular)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup GCC Toolchain for CMake
         run: export CXX=g++-13
       - name: Install CMake
@@ -43,6 +43,6 @@ jobs:
     name: build + test (Nix)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: cachix/install-nix-action@v31
       - run: nix build . # Build the default Flake attribute.
