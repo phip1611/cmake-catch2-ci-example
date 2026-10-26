@@ -1,6 +1,15 @@
 name: Build CMake-based Project
 
-on: [ push, pull_request, merge_group ]
+on:
+  merge_group:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
+  # Keep a result for every commit on main.
+  cancel-in-progress: ${{ github.event_name != 'push' }}
 
 env:
   # Keep in sync with the version coming from Nix for local development:
